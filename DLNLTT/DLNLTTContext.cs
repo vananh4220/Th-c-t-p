@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -21,9 +22,11 @@ namespace DLNLTT
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            string connectDB = ConfigurationManager.AppSettings["connectDB"];
+
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=LAPTOP-TMG7DMND\\SQLEXPRESS;Database=DLNLTT;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(connectDB);
             }
         }
 

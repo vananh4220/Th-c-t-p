@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "YFh1kWXiI/dSMeNWWSHJFjwjHFrAk2B+Uk+XDxJ3fQjD2GaHTbMXHDrRxMsl2cc8Zmla0WGVdaGBihRgP8SNdw==",
+  "dgSpecHash": "owK4l6haAc5gBMaHkRKDBZhaWgTr/0QJEXtwH+TodA+KaCrnyQ0FBFFFOz77sBy5NWYqoAQ0Pwq8aK/jlcb/LA==",
   "success": true,
   "projectFilePath": "D:\\Thực tập\\DLNLTT\\DLNLTT\\DLNLTT.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ladyk\\.nuget\\packages\\fizzler.tools\\1.1.0\\fizzler.tools.1.1.0.nupkg.sha512",
     "C:\\Users\\ladyk\\.nuget\\packages\\htmlagilitypack\\1.11.38\\htmlagilitypack.1.11.38.nupkg.sha512",
     "C:\\Users\\ladyk\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
+    "C:\\Users\\ladyk\\.nuget\\packages\\log4net\\2.0.13\\log4net.2.0.13.nupkg.sha512",
     "C:\\Users\\ladyk\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\ladyk\\.nuget\\packages\\microsoft.data.sqlclient\\2.0.1\\microsoft.data.sqlclient.2.0.1.nupkg.sha512",
     "C:\\Users\\ladyk\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\2.0.1\\microsoft.data.sqlclient.sni.runtime.2.0.1.nupkg.sha512",
