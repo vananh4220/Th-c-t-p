@@ -1,14 +1,12 @@
-﻿using System;
-using System.Configuration;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-
+﻿using Microsoft.EntityFrameworkCore;
 #nullable disable
 
 namespace DLNLTT
 {
+    
     public partial class DLNLTTContext : DbContext
     {
+        
         public DLNLTTContext()
         {
         }
@@ -22,11 +20,11 @@ namespace DLNLTT
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string connectDB = ConfigurationManager.AppSettings["connectDB"];
-
+            ReadJson rj = new ReadJson();
+            var items = rj.GetDataFromJson();
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(connectDB);
+                optionsBuilder.UseSqlServer( items.ConnectionString);
             }
         }
 

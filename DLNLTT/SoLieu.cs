@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 #nullable disable
 
 namespace DLNLTT
 {
     public partial class SoLieu
     {
-        private object utf8;
-
         public int Id { get; set; }
         public string MtHt { get; set; }
         public string MtCsln { get; set; }

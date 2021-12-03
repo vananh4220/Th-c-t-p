@@ -1,54 +1,42 @@
 ﻿using HtmlAgilityPack;
 using log4net;
+using Quartz;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Timers;
+using System.Threading.Tasks;
 
 namespace DLNLTT
 {
-    public class ThuThapSoLieu //Service
+    class ThuThapSoLieu : IJob
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ThuThapSoLieu));
+        protected static readonly ILog log = LogManager.GetLogger(typeof(ThuThapSoLieu));
 
-        private readonly Timer _timer;
-
-        public ThuThapSoLieu()
+        public Task Execute(IJobExecutionContext context)
         {
-            int timer = int.Parse(ConfigurationManager.AppSettings["timer"]);
-            _timer = new Timer(timer) { AutoReset = true };
-            _timer.Elapsed += TimerElapsed;
-        } 
+            ReadJson rj = new ReadJson();
+            var items = rj.GetDataFromJson();
 
-        private async void TimerElapsed(object sender, ElapsedEventArgs e)
-        {
             try
             {
+                log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.config"));
                 string token = "";
-                string url = ConfigurationManager.AppSettings["url"];
-                string Username = ConfigurationManager.AppSettings["Username"];
-                string Password = ConfigurationManager.AppSettings["Password"];
-
-
-
-                string urltoken = url;
+                string Username = items.Username;
+                string Password = items.Password;
+                string url = items.Url;
                 using (HttpClient client = new HttpClient())
                 {
-                    HttpResponseMessage message = client.GetAsync(urltoken).Result;
+                    
+                    HttpResponseMessage message = client.GetAsync(url).Result;
                     if (message.IsSuccessStatusCode)
                     {
                         string data = message.Content.ReadAsStringAsync().Result;
                         var htmlDocument = new HtmlDocument();
                         htmlDocument.LoadHtml(data);
-                        var a = htmlDocument.DocumentNode.SelectSingleNode("//form[@id='login-form']/input");
-                        token = a.Attributes["value"].Value;
-
+                        token = htmlDocument.DocumentNode.SelectSingleNode("//form[@id='login-form']/input").Attributes["value"].Value;
                         client.DefaultRequestHeaders.Add("Referer", url);
                         List<KeyValuePair<string, string>> param = new List<KeyValuePair<string, string>>()
 
@@ -58,7 +46,7 @@ namespace DLNLTT
                         new KeyValuePair<string, string>("Password", Password),
                         };
                         FormUrlEncodedContent form = new FormUrlEncodedContent(param);
-                        HttpResponseMessage message1 = client.PostAsync(urltoken, form).Result;
+                        HttpResponseMessage message1 = client.PostAsync(url, form).Result;
                         string result = message1.Content.ReadAsStringAsync().Result;
                         htmlDocument.LoadHtml(result);
                         var document = htmlDocument.DocumentNode.Descendants("div")
@@ -91,7 +79,7 @@ namespace DLNLTT
                             string t_tk = colList[18].InnerText.ToString().Trim('\r', '\n').Trim();
                             string t_sln = colList[19].InnerText.ToString().Trim('\r', '\n').Trim();
 
-                            using (var context = new DLNLTTContext())
+                            using (var cont = new DLNLTTContext())
                             {
                                 var soLieu = new SoLieu
                                 {
@@ -117,12 +105,14 @@ namespace DLNLTT
 
                                     ThoiGian = now.ToString()
                                 };
+
                                 //context.SoLieus.Add(soLieu);
 
-                                context.Add<SoLieu>(soLieu);
+                                cont.Add<SoLieu>(soLieu);
 
-                                context.SaveChanges();
+                                cont.SaveChanges();
                                 log.InfoFormat(soLieu.ToString(), Encoding.UTF8);
+
                             }
 
                         }
@@ -135,18 +125,8 @@ namespace DLNLTT
                 log.Error(ex.Message);
 
             }
-        }
-        // start timer
-        public void Start()
-        {
-            _timer.Start();
-            
+            return Task.CompletedTask;
         }
 
-        // stop timer
-        public void Stop()
-        {
-            _timer.Stop();
-        }
     }
 }
