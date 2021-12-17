@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace DLNLTT
 {
+    [DisallowConcurrentExecution]
     class ThuThapSoLieu : IJob
     {
         protected static readonly ILog log = LogManager.GetLogger(typeof(ThuThapSoLieu));
@@ -22,111 +23,83 @@ namespace DLNLTT
 
             try
             {
-                log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.config"));
-                string token = "";
-                string Username = items.Username;
-                string Password = items.Password;
-                string url = items.Url;
+                //log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.config"));
                 using (HttpClient client = new HttpClient())
                 {
-                    
-                    HttpResponseMessage message = client.GetAsync(url).Result;
+                    HttpResponseMessage message = client.GetAsync(items.Url).Result;//thực hiện truy vấn get
                     if (message.IsSuccessStatusCode)
                     {
                         string data = message.Content.ReadAsStringAsync().Result;
                         var htmlDocument = new HtmlDocument();
                         htmlDocument.LoadHtml(data);
-                        token = htmlDocument.DocumentNode.SelectSingleNode("//form[@id='login-form']/input").Attributes["value"].Value;
-                        client.DefaultRequestHeaders.Add("Referer", url);
+                        string token = htmlDocument.DocumentNode.SelectSingleNode("//form[@id='login-form']/input").Attributes["value"].Value;
+                        client.DefaultRequestHeaders.Add("Referer", items.Url);//thiết lập header
                         List<KeyValuePair<string, string>> param = new List<KeyValuePair<string, string>>()
-
                         {
                         new KeyValuePair<string, string>("__RequestVerificationToken", token),
-                        new KeyValuePair<string, string>("Username", Username),
-                        new KeyValuePair<string, string>("Password", Password),
+                        new KeyValuePair<string, string>("Username", items.Username),
+                        new KeyValuePair<string, string>("Password", items.Password),
                         };
                         FormUrlEncodedContent form = new FormUrlEncodedContent(param);
-                        HttpResponseMessage message1 = client.PostAsync(url, form).Result;
+                        HttpResponseMessage message1 = client.PostAsync(items.Url, form).Result;
                         string result = message1.Content.ReadAsStringAsync().Result;
                         htmlDocument.LoadHtml(result);
                         var document = htmlDocument.DocumentNode.Descendants("div")
                             .Where(node => node.GetAttributeValue("class", "").Equals("m-widget1")).ToList();
-
-                        DateTime now = DateTime.Now;
-
                         foreach (var doc in document)
                         {
                             var colNodes = doc.Descendants("h3");
                             var colList = colNodes.ToList();
 
-                            string mt_ht = colList[1].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string mt_csln = colList[2].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string mt_tk = colList[3].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string mt_sln = colList[4].InnerText.ToString().Trim('\r', '\n').Trim();
-
-                            string g_ht = colList[6].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string g_csln = colList[7].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string g_tk = colList[8].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string g_sln = colList[9].InnerText.ToString().Trim('\r', '\n').Trim();
-
-                            string sk_ht = colList[11].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string sk_csln = colList[12].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string sk_tk = colList[13].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string sk_sln = colList[14].InnerText.ToString().Trim('\r', '\n').Trim();
-
-                            string t_ht = colList[16].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string t_csln = colList[17].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string t_tk = colList[18].InnerText.ToString().Trim('\r', '\n').Trim();
-                            string t_sln = colList[19].InnerText.ToString().Trim('\r', '\n').Trim();
-
                             using (var cont = new DLNLTTContext())
                             {
                                 var soLieu = new SoLieu
                                 {
-                                    MtHt = Regex.Replace(mt_ht, @"\s", ""),
-                                    MtCsln = Regex.Replace(mt_csln, @"\s", ""),
-                                    MtTk = Regex.Replace(mt_tk, @"\s", ""),
-                                    MtSln = Regex.Replace(mt_sln, @"\s", ""),
+                                    MtHt = FormatStringInput(colList[1].InnerText.ToString()),
+                                    MtCsln = FormatStringInput(colList[2].InnerText.ToString()),
+                                    MtTk = FormatStringInput(colList[3].InnerText.ToString()),
+                                    MtSln = FormatStringInput(colList[4].InnerText.ToString()),
 
-                                    GHt = Regex.Replace(g_ht, @"\s", ""),
-                                    GCsln = Regex.Replace(g_csln, @"\s", ""),
-                                    GTk = Regex.Replace(g_tk, @"\s", ""),
-                                    GSln = Regex.Replace(g_sln, @"\s", ""),
+                                    GHt = FormatStringInput(colList[6].InnerText.ToString()),
+                                    GCsln = FormatStringInput(colList[7].InnerText.ToString()),
+                                    GTk = FormatStringInput(colList[8].InnerText.ToString()),
+                                    GSln = FormatStringInput(colList[9].InnerText.ToString()),
 
-                                    SkHt = Regex.Replace(sk_ht, @"\s", ""),
-                                    SkCsln = Regex.Replace(sk_csln, @"\s", ""),
-                                    SkTk = Regex.Replace(sk_tk, @"\s", ""),
-                                    SkSln = Regex.Replace(sk_sln, @"\s", ""),
+                                    SkHt = FormatStringInput(colList[11].InnerText.ToString()),
+                                    SkCsln = FormatStringInput(colList[12].InnerText.ToString()),
+                                    SkTk = FormatStringInput(colList[13].InnerText.ToString()),
+                                    SkSln = FormatStringInput(colList[14].InnerText.ToString()),
 
-                                    THt = Regex.Replace(t_ht, @"\s", ""),
-                                    TCsln = Regex.Replace(t_csln, @"\s", ""),
-                                    TTk = Regex.Replace(t_tk, @"\s", ""),
-                                    TSln = Regex.Replace(t_sln, @"\s", ""),
+                                    THt = FormatStringInput(colList[16].InnerText.ToString()),
+                                    TCsln = FormatStringInput(colList[17].InnerText.ToString()),
+                                    TTk = FormatStringInput(colList[18].InnerText.ToString()),
+                                    TSln = FormatStringInput(colList[19].InnerText.ToString()),
 
-                                    ThoiGian = now.ToString()
+                                    ThoiGian = DateTime.Now.ToString()
                                 };
-
-                                //context.SoLieus.Add(soLieu);
-
                                 cont.Add<SoLieu>(soLieu);
 
                                 cont.SaveChanges();
                                 log.InfoFormat(soLieu.ToString(), Encoding.UTF8);
 
                             }
-
                         }
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 log.Error(ex.Message);
-
             }
             return Task.CompletedTask;
         }
-
+        private string FormatStringInput(string input)
+        {
+            if( input!= null)
+            {
+                input = Regex.Replace(input.Trim('\r', '\n').Trim(), @"\s", "");
+            }
+            return input;
+        }
     }
 }

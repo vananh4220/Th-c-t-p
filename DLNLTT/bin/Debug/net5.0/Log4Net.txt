@@ -1,0 +1,19 @@
+﻿2021-12-17 15:17:03,085 [1] INFO - Quartz scheduler 'DefaultQuartzScheduler' initialized
+2021-12-17 15:17:03,092 [1] INFO - Quartz scheduler version: 3.3.3.0
+2021-12-17 15:17:03,116 [1] INFO - Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED started.
+2021-12-17 15:19:42,759 [1] INFO - Start
+2021-12-17 15:19:49,278 [1] INFO - Default Quartz.NET properties loaded from embedded resource file
+2021-12-17 15:19:49,438 [1] INFO - Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+2021-12-17 15:19:49,439 [1] INFO - Quartz Scheduler created
+2021-12-17 15:19:49,456 [1] INFO - RAMJobStore initialized.
+2021-12-17 15:19:49,471 [1] INFO - Scheduler meta-data: Quartz Scheduler (v3.3.3.0) 'DefaultQuartzScheduler' with instanceId 'NON_CLUSTERED'
+  Scheduler class: 'Quartz.Core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'Quartz.Simpl.DefaultThreadPool' - with 10 threads.
+  Using job-store 'Quartz.Simpl.RAMJobStore' - which does not support persistence. and is not clustered.
+
+2021-12-17 15:19:49,472 [1] INFO - Quartz scheduler 'DefaultQuartzScheduler' initialized
+2021-12-17 15:19:49,473 [1] INFO - Quartz scheduler version: 3.3.3.0
+2021-12-17 15:19:49,502 [1] INFO - Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED started.
